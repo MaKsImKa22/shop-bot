@@ -107,7 +107,10 @@ async def main():
     await step(msg("Олена"), "bad name")
     await step(msg("Олена Коваль"), "name")
     await step(msg("123"), "bad phone")
-    await step(msg("+380 67 123 45 67"), "phone")
+    await step(msg("+380 000 000 00 00"), "13 digits (bad)")
+    assert app.normalize_phone("+380 67 123 45 67") == "+380671234567"
+    assert app.normalize_phone("380671234567") == "+380671234567"
+    await step(msg("067 123 45 67"), "phone without +38")
     await step(msg("Луцьк"), "city")
     await step(msg("відділення"), "bad branch")
     await step(msg("Відділення 12"), "branch")
@@ -118,6 +121,7 @@ async def main():
     assert db.cart_items(1) == []
     order = db.get_order(1)
     assert order["branch"] == "№12" and order["total"] == 890 + 190 * 2
+    assert order["phone"] == "+380671234567", order["phone"]
 
     await step(msg(app.BTN_ORDERS), "my orders")
     await step(msg(app.BTN_INFO), "info")

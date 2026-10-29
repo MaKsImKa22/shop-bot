@@ -88,6 +88,16 @@ def cart_lines(user_id):
     return lines, sum(p.price * q for p, q in lines)
 
 
+def normalize_phone(text):
+    """Український номер у вигляді +380XXXXXXXXX або None, якщо формат неправильний."""
+    digits = re.sub(r"\D", "", text)
+    if len(digits) == 10 and digits.startswith("0"):
+        digits = "38" + digits
+    if len(digits) == 12 and digits.startswith("380"):
+        return "+" + digits
+    return None
+
+
 def delivery_note(total):
     if total >= config.FREE_DELIVERY_FROM:
         return "🚚 Доставка безкоштовна"
@@ -451,14 +461,20 @@ async def save_phone(message: Message, state: FSMContext, phone):
 
 @router.message(Checkout.phone, F.contact)
 async def got_contact(message: Message, state: FSMContext):
-    await save_phone(message, state, message.contact.phone_number)
+    # номер з Telegram міг бути іноземним - тоді лишаємо як є
+    phone = message.contact.phone_number
+    phone = normalize_phone(phone) or "+" + phone.lstrip("+")
+    await save_phone(message, state, phone)
 
 
 @router.message(Checkout.phone, F.text)
 async def got_phone_text(message: Message, state: FSMContext):
-    phone = re.sub(r"[^\d+]", "", message.text)
-    if not re.fullmatch(r"\+?\d{10,13}", phone):
-        await message.answer("Не схоже на номер 🤔 Напишіть у форматі +380XXXXXXXXX або натисніть кнопку.")
+    phone = normalize_phone(message.text)
+    if not phone:
+        await message.answer(
+            "Не схоже на український номер 🤔 Напишіть у форматі +380671234567 або 0671234567, "
+            "або натисніть кнопку нижче."
+        )
         return
     await save_phone(message, state, phone)
 

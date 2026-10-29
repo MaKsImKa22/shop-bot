@@ -5,6 +5,18 @@
 Бот для товарного бізнесу: покупець обирає товари в каталозі, складає кошик і оформлює доставку Новою Поштою,
 а менеджер одразу отримує замовлення в Telegram.
 
+## Як виглядає
+
+| Каталог | Картка товару | Кошик |
+|---|---|---|
+| <img src="screenshots/02-category.png" width="280"> | <img src="screenshots/03-product-card.png" width="280"> | <img src="screenshots/04-cart.png" width="280"> |
+
+| Оформлення під Нову Пошту | Замовлення приходить менеджеру |
+|---|---|
+| <img src="screenshots/05-checkout.png" width="360"> | <img src="screenshots/06-order-admin.png" width="360"> |
+
+Скріншоти зроблені в Telegram Desktop під час тестового замовлення (телефон - заглушка).
+
 ## Що вміє
 
 **Покупець**
